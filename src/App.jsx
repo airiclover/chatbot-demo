@@ -30,11 +30,16 @@ export default class App extends React.Component {
     });
   };
 
-
   selectAnswer = (selectedAnswer, nextQuestionId) => {
     switch (true) {
       case nextQuestionId === "init":
-        this.displayNextQusetion(nextQuestionId)
+        setTimeout(() => this.displayNextQusetion(nextQuestionId), 500);
+        break;
+      case (/^https:*/.test(nextQuestionId)):
+        const a = document.createElement("a");
+        a.href = nextQuestionId;
+        a.target = "blank";
+        a.click();
         break;
       default:
         const chats = this.state.chats;
@@ -45,15 +50,21 @@ export default class App extends React.Component {
 
         this.setState({ chats: chats });
 
-        this.displayNextQusetion(nextQuestionId);
+        setTimeout(() => this.displayNextQusetion(nextQuestionId), 1000);
         break;
     }
   };
 
-
   componentDidMount() {
     const initAnswer = "";
-    this.selectAnswer(initAnswer, this.state.currentId)
+    this.selectAnswer(initAnswer, this.state.currentId);
+  }
+
+  componentDidUpdate() {
+    const scrollArea = document.getElementById("scroll-area");
+    if (scrollArea) {
+      scrollArea.scrollTop = scrollArea.scrollHeight;
+    }
   }
 
   render() {
@@ -61,7 +72,10 @@ export default class App extends React.Component {
       <section className="c-section">
         <div className="c-box">
           <Chats chats={this.state.chats} />
-          <AnswersList answers={this.state.answers} select={this.selectAnswer} />
+          <AnswersList
+            answers={this.state.answers}
+            select={this.selectAnswer}
+          />
         </div>
       </section>
     );
